@@ -1,0 +1,95 @@
+Opamo 741
+
+.option nomod
+
+*********************//Models//*****************************
+
+.model smallnpn npn  is=1.2f     bf=250   VA=170
++                    rb=650      rc=300
+
+.model latpnp   pnp  is=3.1f     bf=90    VA=50
++                    rb=500      rc=150
+
+.model Q15b     pnp  is=2.5f     bf=1.9   VA=80
++                    rb=500      rc=150
+
+.model Q15A     pnp  is=1f       bf=0.4   VA=80
++                    rb=1000     rc=80
+
+.model Q19      npn  is=3.6f     bf=450   VA=250
++                    rb=180      rc=15
+
+.model Q20      pnp  is=10f      bf=130   VA=55
++                    rb=80       rc=150
+
+.model Q18A     pnp  is=0.8f     bf=90    VA=75
++                    rb=1000     rc=170
+
+Vcc   1        0    15
+Vee   2        0   -15
+
+*********************//Current Reference//****************************
+Q9      8         5     1    latnpn
+Q10     8         24    23   smallnpn
+Q11     24        24    2    smallnpn
+Q12     26        26    1    latpnp
+R4      23        2     5K 
+R5      26        24    39K
+
+*********************//First Stage//************************************
+Q1      5         3     6    smallnpn
+Q2      5         4     7    smallpnp
+Q3      9         8     6    latpnp
+Q4      10        8     7    latpnp
+Q5      9         11    12   smallnpn
+Q6      10        11    13   smallnpn
+Q7      1         9     11   smallnpn
+
+R1      12        2     1K
+R2      13        2     1K
+R3      11        2     50K
+
+*********************//Second Stage//************************************
+Q13       9         10    14   smallnpn
+Q14       15        14    16   smallnpn
+Q15B      15        26    1    Q15B      
+R6        14        2     50K
+R7        16        2     100
+
+*********************//Output Stage//************************************
+Q15A      19        26    1    Q15A
+Q18A      2         15    17   Q18A
+Q16       19        19    18   smallnpn
+Q17       19        18    17   smallnpn
+Q19       1         19    20   Q19
+Q20       2         17    22   Q20
+R8        18        17    40K
+R9        20        21    27
+R10       21        22    22
+
+R1        21        0     1K
+
+
+*********************//DC FB//************************************
+Efb1     103        0     21   105   1
+Vref     105        0     0 
+Rfb1     103        104   100x
+Cfb1     104        0     100
+Efb2     101        100   104  0     1 
+
+
+*********************//Input//************************************
+ein      4          101   102  0  -0.5
+eip      3          100   102  0   0.5
+vcm      100        0     dc=0
+vin      102        0     ac=1
+
+
+
+*********************//AC Analysis//********************************
+.op
+.ac      dec    40    1   16
+.probe   Gain = par ('db(vm(21))')
+.meas    ac     gain  max   par('db(vm(21))')
+
+.end
